@@ -139,14 +139,7 @@ impl Authenticate for RequestBuilder {
 	}
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-enum HttpValue {
-	Value(Value),
-	String(String),
-}
-
-type HttpQueryResponse = (String, Status, HttpValue);
+type HttpQueryResponse = (String, Status, Value);
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Root {
@@ -159,7 +152,6 @@ struct Root {
 struct AuthResponse {
 	code: u16,
 	details: String,
-	#[serde(default)]
 	token: Option<String>,
 }
 
@@ -188,10 +180,6 @@ async fn query(request: RequestBuilder) -> Result<QueryResponse> {
 	for (index, (_time, status, value)) in responses.into_iter().enumerate() {
 		match status {
 			Status::Ok => {
-				let value = match value {
-					HttpValue::Value(value) => value,
-					HttpValue::String(value) => value.into(),
-				};
 				match value {
 					Value::Array(Array(array)) => map.insert(index, Ok(array)),
 					Value::None | Value::Null => map.insert(index, Ok(vec![])),
@@ -199,11 +187,7 @@ async fn query(request: RequestBuilder) -> Result<QueryResponse> {
 				};
 			}
 			Status::Err => {
-				let error = match value {
-					HttpValue::String(message) => message,
-					HttpValue::Value(value) => value.to_string(),
-				};
-				map.insert(index, Err(Error::Query(error).into()));
+				map.insert(index, Err(Error::Query(value.as_raw_string()).into()));
 			}
 		}
 	}
