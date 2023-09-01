@@ -7,6 +7,7 @@ use crate::dbs::node::ClusterMembership;
 use crate::dbs::node::Timestamp;
 use crate::err::Error;
 use crate::idg::u32::U32;
+use crate::key::debug;
 use crate::kvs::cache::Cache;
 use crate::kvs::cache::Entry;
 use crate::kvs::Check;
@@ -617,7 +618,11 @@ impl Transaction {
 		K: Into<Key> + Debug + Clone,
 	{
 		#[cfg(debug_assertions)]
-		trace!("Scan {:?} - {:?}", rng.start, rng.end);
+		trace!(
+			"Scan {:?} - {:?}",
+			debug::sprint_key(&rng.start.clone().into()),
+			debug::sprint_key(&rng.end.clone().into())
+		);
 		match self {
 			#[cfg(feature = "kv-mem")]
 			Transaction {
@@ -753,10 +758,14 @@ impl Transaction {
 	/// This function fetches key-value pairs from the underlying datastore in batches of 1000.
 	pub async fn getr<K>(&mut self, rng: Range<K>, limit: u32) -> Result<Vec<(Key, Val)>, Error>
 	where
-		K: Into<Key> + Debug,
+		K: Into<Key> + Debug + Clone,
 	{
 		#[cfg(debug_assertions)]
-		trace!("Getr {:?}..{:?} (limit: {limit})", rng.start, rng.end);
+		trace!(
+			"Getr {:?}..{:?} (limit: {limit})",
+			debug::sprint_key(&rng.start.clone().into()),
+			debug::sprint_key(&rng.end.clone().into())
+		);
 		let beg: Key = rng.start.into();
 		let end: Key = rng.end.into();
 		let mut nxt: Option<Key> = None;
@@ -1050,8 +1059,6 @@ impl Transaction {
 	) -> Result<Vec<crate::key::root::hb::Hb>, Error> {
 		let beg = crate::key::root::hb::Hb::prefix();
 		let end = crate::key::root::hb::Hb::suffix(time_to);
-		trace!("Scan start: {} ({:?})", String::from_utf8_lossy(&beg).to_string(), &beg);
-		trace!("Scan end: {} ({:?})", String::from_utf8_lossy(&end).to_string(), &end);
 		let mut nxt: Option<Key> = None;
 		let mut num = limit;
 		let mut out: Vec<crate::key::root::hb::Hb> = vec![];
