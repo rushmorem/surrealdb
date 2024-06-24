@@ -97,12 +97,12 @@ pub fn table((val,): (Value,)) -> Result<Value, Error> {
 pub fn thing((arg1, arg2): (Value, Option<Value>)) -> Result<Value, Error> {
 	match (arg1, arg2) {
 		// Empty table name
-		(Value::Strand(arg1), _) if arg1.is_empty() => Err(Error::TbInvalid {
+		(Value::String(arg1), _) if arg1.is_empty() => Err(Error::TbInvalid {
 			value: arg1,
 		}),
 
 		// Empty ID part
-		(_, Some(Value::Strand(arg2))) if arg2.is_empty() => Err(Error::IdInvalid {
+		(_, Some(Value::String(arg2))) if arg2.is_empty() => Err(Error::IdInvalid {
 			value: arg2,
 		}),
 
@@ -121,8 +121,8 @@ pub fn thing((arg1, arg2): (Value, Option<Value>)) -> Result<Value, Error> {
 		// No second argument passed
 		(arg1, _) => Ok(match arg1 {
 			Value::Thing(v) => Ok(v),
-			Value::Strand(v) => Thing::try_from(v.as_str()).map_err(move |_| Error::ConvertTo {
-				from: Value::Strand(v),
+			Value::String(v) => Thing::try_from(v.as_str()).map_err(move |_| Error::ConvertTo {
+				from: Value::String(v),
 				into: "record".into(),
 			}),
 			v => Err(Error::ConvertTo {
@@ -175,8 +175,8 @@ pub fn range(args: Vec<Value>) -> Result<Value, Error> {
 					.to_string(),
 			})?;
 			match x {
-				Value::Strand(x) if x == "included" => Bound::Included(start),
-				Value::Strand(x) if x == "excluded" => Bound::Excluded(start),
+				Value::String(x) if x == "included" => Bound::Included(start),
+				Value::String(x) if x == "excluded" => Bound::Excluded(start),
 				x => {
 					return Err(Error::ConvertTo {
 						from: x.clone(),
@@ -193,8 +193,8 @@ pub fn range(args: Vec<Value>) -> Result<Value, Error> {
 				message: "Can't define an inclusion for end if there is no end bound".to_string(),
 			})?;
 			match x {
-				Value::Strand(x) if x == "included" => Bound::Included(end),
-				Value::Strand(x) if x == "excluded" => Bound::Excluded(end),
+				Value::String(x) if x == "included" => Bound::Included(end),
+				Value::String(x) if x == "excluded" => Bound::Excluded(end),
 				x => {
 					return Err(Error::ConvertTo {
 						from: x.clone(),

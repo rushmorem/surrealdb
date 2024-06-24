@@ -93,10 +93,10 @@ pub trait RpcContext {
 
 	async fn yuse(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
 		let (ns, db) = params.needs_two()?;
-		if let Value::Strand(ns) = ns {
+		if let Value::String(ns) = ns {
 			self.session_mut().ns = Some(ns);
 		}
-		if let Value::Strand(db) = db {
+		if let Value::String(db) = db {
 			self.session_mut().db = Some(db);
 		}
 		Ok(Value::None)
@@ -137,7 +137,7 @@ pub trait RpcContext {
 	}
 
 	async fn authenticate(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok(Value::Strand(token)) = params.needs_one() else {
+		let Ok(Value::String(token)) = params.needs_one() else {
 			return Err(RpcError::InvalidParams);
 		};
 		let mut tmp_session = self.session().clone();
@@ -166,7 +166,7 @@ pub trait RpcContext {
 	// ------------------------------
 
 	async fn set(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok((Value::Strand(key), val)) = params.needs_one_or_two() else {
+		let Ok((Value::String(key), val)) = params.needs_one_or_two() else {
 			return Err(RpcError::InvalidParams);
 		};
 		// Specify the query parameters
@@ -185,7 +185,7 @@ pub trait RpcContext {
 	}
 
 	async fn unset(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok(Value::Strand(key)) = params.needs_one() else {
+		let Ok(Value::String(key)) = params.needs_one() else {
 			return Err(RpcError::InvalidParams);
 		};
 		self.vars_mut().remove(&key);
@@ -558,12 +558,12 @@ pub trait RpcContext {
 	// ------------------------------
 
 	async fn run(&self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok((Value::Strand(func_name), version, args)) = params.needs_one_two_or_three() else {
+		let Ok((Value::String(func_name), version, args)) = params.needs_one_two_or_three() else {
 			return Err(RpcError::InvalidParams);
 		};
 
 		let version = match version {
-			Value::Strand(v) => Some(v),
+			Value::String(v) => Some(v),
 			Value::None | Value::Null => None,
 			_ => return Err(RpcError::InvalidParams),
 		};
@@ -608,7 +608,7 @@ pub trait RpcContext {
 		// Execute the query on the database
 		let res = match query {
 			Value::Query(sql) => self.kvs().process(sql, self.session(), vars).await?,
-			Value::Strand(sql) => self.kvs().execute(&sql, self.session(), vars).await?,
+			Value::String(sql) => self.kvs().execute(&sql, self.session(), vars).await?,
 			_ => unreachable!(),
 		};
 

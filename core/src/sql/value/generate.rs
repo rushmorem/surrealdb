@@ -18,7 +18,7 @@ impl Value {
 				id: id.as_int().into(),
 			}),
 			// There is a string for the id field
-			Value::Strand(id) if !id.is_empty() => Ok(Thing {
+			Value::String(id) if !id.is_empty() => Ok(Thing {
 				tb: tb.0.to_string(),
 				id: id.into(),
 			}),

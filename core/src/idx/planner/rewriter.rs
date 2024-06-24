@@ -35,7 +35,7 @@ impl<'a> KnnConditionRewriter<'a> {
 			| Value::Null
 			| Value::Bool(_)
 			| Value::Number(_)
-			| Value::Strand(_)
+			| Value::String(_)
 			| Value::Duration(_)
 			| Value::Datetime(_)
 			| Value::Uuid(_)

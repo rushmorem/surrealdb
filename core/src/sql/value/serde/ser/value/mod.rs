@@ -188,7 +188,7 @@ impl ser::Serializer for Serializer {
 	{
 		match name {
 			sql::strand::TOKEN => {
-				Ok(Value::Strand(value.serialize(ser::string::Serializer.wrap())?))
+				Ok(Value::String(value.serialize(ser::string::Serializer.wrap())?))
 			}
 			sql::block::TOKEN => Ok(Value::Block(Box::new(Block(
 				value.serialize(ser::block::entry::vec::Serializer.wrap())?,
@@ -653,19 +653,19 @@ mod tests {
 	fn strand() {
 		let strand = Strand("foobar".to_owned());
 		let value = to_value(&strand).unwrap();
-		let expected = Value::Strand(strand.0);
+		let expected = Value::String(strand.0);
 		assert_eq!(value, expected);
 		assert_eq!(expected, to_value(&expected).unwrap());
 
 		let strand = "foobar".to_owned();
 		let value = to_value(&strand).unwrap();
-		let expected = Value::Strand(strand);
+		let expected = Value::String(strand);
 		assert_eq!(value, expected);
 		assert_eq!(expected, to_value(&expected).unwrap());
 
 		let strand = "foobar";
 		let value = to_value(strand).unwrap();
-		let expected = Value::Strand(strand.to_owned());
+		let expected = Value::String(strand.to_owned());
 		assert_eq!(value, expected);
 		assert_eq!(expected, to_value(&expected).unwrap());
 	}

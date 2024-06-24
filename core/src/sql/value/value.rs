@@ -84,7 +84,7 @@ pub enum Value {
 	Null,
 	Bool(bool),
 	Number(Number),
-	Strand(String),
+	String(String),
 	Duration(Duration),
 	Datetime(Datetime),
 	Uuid(Uuid),
@@ -202,7 +202,7 @@ impl From<Number> for Value {
 
 impl From<Strand> for Value {
 	fn from(v: Strand) -> Self {
-		Value::Strand(v.0)
+		Value::String(v.0)
 	}
 }
 
@@ -382,13 +382,13 @@ impl From<Decimal> for Value {
 
 impl From<String> for Value {
 	fn from(v: String) -> Self {
-		Self::Strand(v)
+		Self::String(v)
 	}
 }
 
 impl From<&str> for Value {
 	fn from(v: &str) -> Self {
-		Self::Strand(v.to_owned())
+		Self::String(v.to_owned())
 	}
 }
 
@@ -686,7 +686,7 @@ impl TryFrom<Value> for String {
 	type Error = Error;
 	fn try_from(value: Value) -> Result<Self, Self::Error> {
 		match value {
-			Value::Strand(x) => Ok(x),
+			Value::String(x) => Ok(x),
 			_ => Err(Error::TryFrom(value.to_string(), "String")),
 		}
 	}
@@ -869,7 +869,7 @@ impl Value {
 			Value::Geometry(_) => true,
 			Value::Array(v) => !v.is_empty(),
 			Value::Object(v) => !v.is_empty(),
-			Value::Strand(v) => !v.is_empty() && !v.eq_ignore_ascii_case("false"),
+			Value::String(v) => !v.is_empty() && !v.eq_ignore_ascii_case("false"),
 			Value::Number(v) => v.is_truthy(),
 			Value::Duration(v) => v.as_nanos() > 0,
 			Value::Datetime(v) => v.timestamp() > 0,
@@ -909,7 +909,7 @@ impl Value {
 
 	/// Check if this Value is a Strand
 	pub fn is_strand(&self) -> bool {
-		matches!(self, Value::Strand(_))
+		matches!(self, Value::String(_))
 	}
 
 	/// Check if this Value is a Query
@@ -1056,7 +1056,7 @@ impl Value {
 	/// Convert this Value into a String
 	pub fn as_string(self) -> String {
 		match self {
-			Value::Strand(v) => v,
+			Value::String(v) => v,
 			Value::Uuid(v) => v.to_raw(),
 			Value::Datetime(v) => v.to_raw(),
 			_ => self.to_string(),
@@ -1066,7 +1066,7 @@ impl Value {
 	/// Converts this Value into an unquoted String
 	pub fn as_raw_string(self) -> String {
 		match self {
-			Value::Strand(v) => v,
+			Value::String(v) => v,
 			Value::Uuid(v) => v.to_raw(),
 			Value::Datetime(v) => v.to_raw(),
 			_ => self.to_string(),
@@ -1080,7 +1080,7 @@ impl Value {
 	/// Converts this Value into an unquoted String
 	pub fn to_raw_string(&self) -> String {
 		match self {
-			Value::Strand(v) => v.clone(),
+			Value::String(v) => v.clone(),
 			Value::Uuid(v) => v.to_raw(),
 			Value::Datetime(v) => v.to_raw(),
 			_ => self.to_string(),
@@ -1092,7 +1092,7 @@ impl Value {
 		match self {
 			Value::Idiom(v) => v.simplify(),
 			Value::Param(v) => v.to_raw().into(),
-			Value::Strand(v) => v.to_string().into(),
+			Value::String(v) => v.to_string().into(),
 			Value::Datetime(v) => v.0.to_string().into(),
 			Value::Future(_) => "future".to_string().into(),
 			Value::Function(v) => v.to_idiom(),
@@ -1154,7 +1154,7 @@ impl Value {
 	/// Treat a string as a table name
 	pub fn could_be_table(self) -> Value {
 		match self {
-			Value::Strand(v) => Value::Table(v.into()),
+			Value::String(v) => Value::Table(v.into()),
 			_ => self,
 		}
 	}
@@ -1172,7 +1172,7 @@ impl Value {
 			Self::Uuid(_) => "uuid",
 			Self::Array(_) => "array",
 			Self::Object(_) => "object",
-			Self::Strand(_) => "string",
+			Self::String(_) => "string",
 			Self::Duration(_) => "duration",
 			Self::Datetime(_) => "datetime",
 			Self::Number(Number::Int(_)) => "int",
@@ -1471,7 +1471,7 @@ impl Value {
 			// Allow any Regex value
 			Value::Regex(v) => Ok(v),
 			// Allow any string value
-			Value::Strand(v) => Ok(v.as_str().parse()?),
+			Value::String(v) => Ok(v.as_str().parse()?),
 			// Anything else raises an error
 			_ => Err(Error::CoerceTo {
 				from: self,
@@ -1488,7 +1488,7 @@ impl Value {
 			// Allow any datetime value
 			Value::Datetime(v) => Ok(v.to_raw()),
 			// Allow any string value
-			Value::Strand(v) => Ok(v),
+			Value::String(v) => Ok(v),
 			// Anything else raises an error
 			_ => Err(Error::CoerceTo {
 				from: self,
@@ -1824,7 +1824,7 @@ impl Value {
 			// Allow any boolean value
 			Value::Bool(v) => Ok(v),
 			// Attempt to convert a string value
-			Value::Strand(ref v) => match v.parse::<bool>() {
+			Value::String(ref v) => match v.parse::<bool>() {
 				// The string can be represented as a Float
 				Ok(v) => Ok(v),
 				// This string is not a float
@@ -1859,7 +1859,7 @@ impl Value {
 				}),
 			},
 			// Attempt to convert a string value
-			Value::Strand(ref v) => match v.parse::<i64>() {
+			Value::String(ref v) => match v.parse::<i64>() {
 				// The string can be represented as a Float
 				Ok(v) => Ok(Number::Int(v)),
 				// This string is not a float
@@ -1894,7 +1894,7 @@ impl Value {
 				}),
 			},
 			// Attempt to convert a string value
-			Value::Strand(ref v) => match v.parse::<f64>() {
+			Value::String(ref v) => match v.parse::<f64>() {
 				// The string can be represented as a Float
 				Ok(v) => Ok(Number::Float(v)),
 				// This string is not a float
@@ -1929,7 +1929,7 @@ impl Value {
 				}),
 			},
 			// Attempt to convert a string value
-			Value::Strand(ref v) => match Decimal::from_str(v) {
+			Value::String(ref v) => match Decimal::from_str(v) {
 				// The string can be represented as a Decimal
 				Ok(v) => Ok(Number::Decimal(v)),
 				// This string is not a Decimal
@@ -1952,7 +1952,7 @@ impl Value {
 			// Allow any number
 			Value::Number(v) => Ok(v),
 			// Attempt to convert a string value
-			Value::Strand(ref v) => match Number::from_str(v) {
+			Value::String(ref v) => match Number::from_str(v) {
 				// The string can be represented as a Float
 				Ok(v) => Ok(v),
 				// This string is not a float
@@ -1998,7 +1998,7 @@ impl Value {
 			// Uuids are allowed
 			Value::Uuid(v) => Ok(v),
 			// Attempt to parse a string
-			Value::Strand(ref v) => match Uuid::try_from(v.as_str()) {
+			Value::String(ref v) => match Uuid::try_from(v.as_str()) {
 				// The string can be represented as a uuid
 				Ok(v) => Ok(v),
 				// This string is not a uuid
@@ -2021,7 +2021,7 @@ impl Value {
 			// Datetimes are allowed
 			Value::Datetime(v) => Ok(v),
 			// Attempt to parse a string
-			Value::Strand(ref v) => match Datetime::try_from(v.as_str()) {
+			Value::String(ref v) => match Datetime::try_from(v.as_str()) {
 				// The string can be represented as a datetime
 				Ok(v) => Ok(v),
 				// This string is not a datetime
@@ -2044,7 +2044,7 @@ impl Value {
 			// Durations are allowed
 			Value::Duration(v) => Ok(v),
 			// Attempt to parse a string
-			Value::Strand(ref v) => match Duration::try_from(v.as_str()) {
+			Value::String(ref v) => match Duration::try_from(v.as_str()) {
 				// The string can be represented as a duration
 				Ok(v) => Ok(v),
 				// This string is not a duration
@@ -2067,7 +2067,7 @@ impl Value {
 			// Bytes are allowed
 			Value::Bytes(v) => Ok(v),
 			// Strings can be converted to bytes
-			Value::Strand(s) => Ok(Bytes(s.into_bytes())),
+			Value::String(s) => Ok(Bytes(s.into_bytes())),
 			// Anything else raises an error
 			_ => Err(Error::ConvertTo {
 				from: self,
@@ -2130,8 +2130,8 @@ impl Value {
 		match self {
 			// Records are allowed
 			Value::Thing(v) => Ok(v),
-			Value::Strand(v) => Thing::try_from(v.as_str()).map_err(move |_| Error::ConvertTo {
-				from: Value::Strand(v),
+			Value::String(v) => Thing::try_from(v.as_str()).map_err(move |_| Error::ConvertTo {
+				from: Value::String(v),
 				into: "record".into(),
 			}),
 			// Anything else raises an error
@@ -2321,7 +2321,7 @@ impl Value {
 			Value::Bytes(_) => true,
 			Value::Uuid(_) => true,
 			Value::Number(_) => true,
-			Value::Strand(_) => true,
+			Value::String(_) => true,
 			Value::Duration(_) => true,
 			Value::Datetime(_) => true,
 			Value::Geometry(_) => true,
@@ -2357,8 +2357,8 @@ impl Value {
 				Value::Regex(w) => w.regex().is_match(v.to_raw().as_str()),
 				_ => false,
 			},
-			Value::Strand(v) => match other {
-				Value::Strand(w) => v == w,
+			Value::String(v) => match other {
+				Value::String(w) => v == w,
 				Value::Regex(w) => w.regex().is_match(v.as_str()),
 				_ => false,
 			},
@@ -2366,7 +2366,7 @@ impl Value {
 				Value::Regex(w) => v == w,
 				Value::Uuid(w) => v.regex().is_match(w.to_raw().as_str()),
 				Value::Thing(w) => v.regex().is_match(w.to_raw().as_str()),
-				Value::Strand(w) => v.regex().is_match(w.as_str()),
+				Value::String(w) => v.regex().is_match(w.as_str()),
 				_ => false,
 			},
 			Value::Array(v) => match other {
@@ -2417,11 +2417,11 @@ impl Value {
 	pub fn fuzzy(&self, other: &Value) -> bool {
 		match self {
 			Value::Uuid(v) => match other {
-				Value::Strand(w) => v.to_raw().as_str().fuzzy_match(w.as_str()),
+				Value::String(w) => v.to_raw().as_str().fuzzy_match(w.as_str()),
 				_ => false,
 			},
-			Value::Strand(v) => match other {
-				Value::Strand(w) => v.as_str().fuzzy_match(w.as_str()),
+			Value::String(v) => match other {
+				Value::String(w) => v.as_str().fuzzy_match(w.as_str()),
 				_ => false,
 			},
 			_ => self.equal(other),
@@ -2449,11 +2449,11 @@ impl Value {
 		match self {
 			Value::Array(v) => v.iter().any(|v| v.equal(other)),
 			Value::Uuid(v) => match other {
-				Value::Strand(w) => v.to_raw().contains(w.as_str()),
+				Value::String(w) => v.to_raw().contains(w.as_str()),
 				_ => false,
 			},
-			Value::Strand(v) => match other {
-				Value::Strand(w) => v.contains(w.as_str()),
+			Value::String(v) => match other {
+				Value::String(w) => v.contains(w.as_str()),
 				_ => false,
 			},
 			Value::Geometry(v) => match other {
@@ -2506,7 +2506,7 @@ impl Value {
 	/// Compare this Value to another Value lexicographically
 	pub fn lexical_cmp(&self, other: &Value) -> Option<Ordering> {
 		match (self, other) {
-			(Value::Strand(a), Value::Strand(b)) => Some(lexicmp::lexical_cmp(a, b)),
+			(Value::String(a), Value::String(b)) => Some(lexicmp::lexical_cmp(a, b)),
 			_ => self.partial_cmp(other),
 		}
 	}
@@ -2514,7 +2514,7 @@ impl Value {
 	/// Compare this Value to another Value using natural numerical comparison
 	pub fn natural_cmp(&self, other: &Value) -> Option<Ordering> {
 		match (self, other) {
-			(Value::Strand(a), Value::Strand(b)) => Some(lexicmp::natural_cmp(a, b)),
+			(Value::String(a), Value::String(b)) => Some(lexicmp::natural_cmp(a, b)),
 			_ => self.partial_cmp(other),
 		}
 	}
@@ -2522,7 +2522,7 @@ impl Value {
 	/// Compare this Value to another Value lexicographically and using natural numerical comparison
 	pub fn natural_lexical_cmp(&self, other: &Value) -> Option<Ordering> {
 		match (self, other) {
-			(Value::Strand(a), Value::Strand(b)) => Some(lexicmp::natural_lexical_cmp(a, b)),
+			(Value::String(a), Value::String(b)) => Some(lexicmp::natural_lexical_cmp(a, b)),
 			_ => self.partial_cmp(other),
 		}
 	}
@@ -2555,7 +2555,7 @@ impl fmt::Display for Value {
 			Value::Param(v) => write!(f, "{v}"),
 			Value::Range(v) => write!(f, "{v}"),
 			Value::Regex(v) => write!(f, "{v}"),
-			Value::Strand(v) => write!(f, "{}", quote_plain_str(v)),
+			Value::String(v) => write!(f, "{}", quote_plain_str(v)),
 			Value::Query(v) => write!(f, "{v}"),
 			Value::Subquery(v) => write!(f, "{v}"),
 			Value::Table(v) => write!(f, "{v}"),
@@ -2633,7 +2633,7 @@ impl TryAdd for Value {
 	fn try_add(self, other: Self) -> Result<Self, Error> {
 		Ok(match (self, other) {
 			(Self::Number(v), Self::Number(w)) => Self::Number(v.try_add(w)?),
-			(Self::Strand(v), Self::Strand(w)) => Self::Strand(v + &w),
+			(Self::String(v), Self::String(w)) => Self::String(v + &w),
 			(Self::Datetime(v), Self::Duration(w)) => Self::Datetime(w + v),
 			(Self::Duration(v), Self::Datetime(w)) => Self::Datetime(v + w),
 			(Self::Duration(v), Self::Duration(w)) => Self::Duration(v + w),

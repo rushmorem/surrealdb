@@ -180,7 +180,7 @@ impl Parser<'_> {
 						return Ok(x);
 					}
 				}
-				Value::Strand(strand)
+				Value::String(strand)
 			}
 			t!("+") | t!("-") | TokenKind::Number(_) | TokenKind::Digits | TokenKind::Duration => {
 				self.parse_number_like_prime()?
@@ -289,7 +289,7 @@ impl Parser<'_> {
 				| Value::Null
 				| Value::Bool(_)
 				| Value::Future(_)
-				| Value::Strand(_) => unreachable!(),
+				| Value::String(_) => unreachable!(),
 				Value::Idiom(Idiom(x)) => self.parse_remaining_value_idiom(ctx, x).await,
 				Value::Table(Table(x)) => {
 					self.parse_remaining_value_idiom(ctx, vec![Part::Field(Ident(x))]).await

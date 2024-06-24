@@ -71,7 +71,7 @@ pub fn matches((val, regex): (String, Regex)) -> Result<Value, Error> {
 
 pub fn replace((val, old_or_regexp, new): (String, Value, String)) -> Result<Value, Error> {
 	match old_or_regexp {
-		Value::Strand(old) => {
+		Value::String(old) => {
 			if new.len() > old.len() {
 				let increase = new.len() - old.len();
 				limit(
@@ -257,7 +257,7 @@ pub mod is {
 
 	pub fn uuid((arg,): (Value,)) -> Result<Value, Error> {
 		Ok(match arg {
-			Value::Strand(v) => Uuid::parse_str(v.as_str()).is_ok(),
+			Value::String(v) => Uuid::parse_str(v.as_str()).is_ok(),
 			Value::Uuid(_) => true,
 			_ => false,
 		}
@@ -627,19 +627,19 @@ mod tests {
 	#[test]
 	fn html_encode() {
 		let value = super::html::encode((String::from("<div>Hello world!</div>"),)).unwrap();
-		assert_eq!(value, Value::Strand("&lt;div&gt;Hello&#32;world!&lt;&#47;div&gt;".into()));
+		assert_eq!(value, Value::String("&lt;div&gt;Hello&#32;world!&lt;&#47;div&gt;".into()));
 
 		let value = super::html::encode((String::from("SurrealDB"),)).unwrap();
-		assert_eq!(value, Value::Strand("SurrealDB".into()));
+		assert_eq!(value, Value::String("SurrealDB".into()));
 	}
 
 	#[test]
 	fn html_sanitize() {
 		let value = super::html::sanitize((String::from("<div>Hello world!</div>"),)).unwrap();
-		assert_eq!(value, Value::Strand("<div>Hello world!</div>".into()));
+		assert_eq!(value, Value::String("<div>Hello world!</div>".into()));
 
 		let value = super::html::sanitize((String::from("XSS<script>attack</script>"),)).unwrap();
-		assert_eq!(value, Value::Strand("XSS".into()));
+		assert_eq!(value, Value::String("XSS".into()));
 	}
 
 	#[test]

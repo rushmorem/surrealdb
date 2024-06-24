@@ -85,7 +85,7 @@ pub mod hash {
 
 	pub fn decode((arg,): (Value,)) -> Result<Value, Error> {
 		match arg {
-			Value::Strand(v) => Ok(geo::decode(Strand(v)).into()),
+			Value::String(v) => Ok(geo::decode(Strand(v)).into()),
 			_ => Ok(Value::None),
 		}
 	}

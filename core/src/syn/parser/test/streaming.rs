@@ -638,7 +638,7 @@ fn statements() -> Vec<Statement> {
 		Statement::Update(UpdateStatement {
 			only: true,
 			what: Values(vec![
-				Value::Future(Box::new(Future(Block(vec![Entry::Value(Value::Strand(
+				Value::Future(Box::new(Future(Block(vec![Entry::Value(Value::String(
 					"text".to_string(),
 				))])))),
 				Value::Idiom(Idiom(vec![
@@ -672,7 +672,7 @@ fn statements() -> Vec<Statement> {
 		Statement::Upsert(UpsertStatement {
 			only: true,
 			what: Values(vec![
-				Value::Future(Box::new(Future(Block(vec![Entry::Value(Value::Strand(
+				Value::Future(Box::new(Future(Block(vec![Entry::Value(Value::String(
 					"text".to_string(),
 				))])))),
 				Value::Idiom(Idiom(vec![

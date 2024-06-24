@@ -28,8 +28,8 @@ impl Value {
 					path,
 					value,
 				} => {
-					if let Value::Strand(p) = value {
-						if let Value::Strand(v) = tmp_val.pick(&path) {
+					if let Value::String(p) = value {
+						if let Value::String(v) = tmp_val.pick(&path) {
 							let dmp = dmp::new();
 							let pch = dmp.patch_from_text(p).map_err(|e| Error::InvalidPatch {
 								message: format!("{e:?}"),

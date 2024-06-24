@@ -42,7 +42,7 @@ impl KillStatement {
 			Value::Uuid(id) => *id,
 			Value::Param(param) => match param.compute(stk, ctx, opt, None).await? {
 				Value::Uuid(id) => id,
-				Value::Strand(id) => match uuid::Uuid::try_parse(&id) {
+				Value::String(id) => match uuid::Uuid::try_parse(&id) {
 					Ok(id) => Uuid(id),
 					_ => {
 						return Err(Error::KillStatement {
@@ -58,7 +58,7 @@ impl KillStatement {
 					});
 				}
 			},
-			Value::Strand(maybe_id) => match uuid::Uuid::try_parse(maybe_id) {
+			Value::String(maybe_id) => match uuid::Uuid::try_parse(maybe_id) {
 				Ok(id) => Uuid(id),
 				_ => {
 					return Err(Error::KillStatement {

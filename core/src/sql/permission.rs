@@ -173,7 +173,7 @@ impl InfoStructure for Permission {
 		match self {
 			Permission::None => Value::Bool(false),
 			Permission::Full => Value::Bool(true),
-			Permission::Specific(v) => Value::Strand(v.to_string()),
+			Permission::Specific(v) => Value::String(v.to_string()),
 		}
 	}
 }

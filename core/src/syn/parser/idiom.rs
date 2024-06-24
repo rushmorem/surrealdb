@@ -283,7 +283,7 @@ impl Parser<'_> {
 			}
 			t!("$param") => Part::Value(Value::Param(self.next_token_value()?)),
 			TokenKind::Qoute(_x) => {
-				Part::Value(Value::Strand(self.next_token_value::<Strand>()?.0))
+				Part::Value(Value::String(self.next_token_value::<Strand>()?.0))
 			}
 			_ => {
 				let idiom = self.parse_basic_idiom()?;
@@ -863,7 +863,7 @@ mod tests {
 					tb: "test".to_owned(),
 					id: Id::Number(1),
 				})),
-				Part::Value(Value::Strand("foo".to_owned())),
+				Part::Value(Value::String("foo".to_owned())),
 			]))
 		);
 	}

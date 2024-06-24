@@ -55,7 +55,7 @@ impl Value {
 					n += 1;
 				}
 			}
-			(Value::Strand(a), Value::Strand(b)) if a != b => ops.push(Operation::Change {
+			(Value::String(a), Value::String(b)) if a != b => ops.push(Operation::Change {
 				path,
 				value: {
 					let dmp = dmp::new();

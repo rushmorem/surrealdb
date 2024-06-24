@@ -58,7 +58,7 @@ impl Value {
 						}
 					},
 					Part::Value(x) => match stk.run(|stk| x.compute(stk, ctx, opt, None)).await? {
-						Value::Strand(f) => match v.get_mut(f.as_str()) {
+						Value::String(f) => match v.get_mut(f.as_str()) {
 							Some(v) if v.is_some() => {
 								stk.run(|stk| v.set(stk, ctx, opt, path.next(), val)).await
 							}

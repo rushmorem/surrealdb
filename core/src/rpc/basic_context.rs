@@ -55,7 +55,7 @@ impl RpcContext for BasicRpcContext<'_> {
 	}
 
 	fn version_data(&self) -> impl Into<super::Data> {
-		Value::Strand(self.version_string.clone())
+		Value::String(self.version_string.clone())
 	}
 
 	// reimplimentaions:
@@ -86,7 +86,7 @@ impl RpcContext for BasicRpcContext<'_> {
 	}
 
 	async fn authenticate(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok(Value::Strand(token)) = params.needs_one() else {
+		let Ok(Value::String(token)) = params.needs_one() else {
 			return Err(RpcError::InvalidParams);
 		};
 		crate::iam::verify::token(self.kvs, &mut self.session, &token).await?;

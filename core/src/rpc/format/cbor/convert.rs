@@ -168,7 +168,7 @@ impl TryFrom<Cbor> for Value {
 						},
 						Data::Array(mut v) if v.len() == 2 => {
 							let tb = match Value::try_from(Cbor(v.remove(0))) {
-								Ok(Value::Strand(tb)) => tb,
+								Ok(Value::String(tb)) => tb,
 								Ok(Value::Table(tb)) => tb.0,
 								_ => return Err(
 									"Expected the tb of a Record Id to be a String or Table value",
@@ -176,7 +176,7 @@ impl TryFrom<Cbor> for Value {
 							};
 
 							match Value::try_from(Cbor(v.remove(0))) {
-								Ok(Value::Strand(id)) => {
+								Ok(Value::String(id)) => {
 									Ok(Value::from(Thing::from((tb, Id::from(id)))))
 								}
 								Ok(Value::Number(Number::Int(id))) => {
@@ -332,7 +332,7 @@ impl TryFrom<Value> for Cbor {
 					Ok(Cbor(Data::Tag(TAG_STRING_DECIMAL, Box::new(Data::Text(v.to_string())))))
 				}
 			},
-			Value::Strand(v) => Ok(Cbor(Data::Text(v))),
+			Value::String(v) => Ok(Cbor(Data::Text(v))),
 			Value::Duration(v) => {
 				let seconds = v.secs();
 				let nanos = v.subsec_nanos();

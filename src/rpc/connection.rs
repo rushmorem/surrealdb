@@ -417,7 +417,7 @@ impl RpcContext for Connection {
 	}
 
 	async fn authenticate(&mut self, params: Array) -> Result<impl Into<Data>, RpcError> {
-		let Ok(Value::Strand(token)) = params.needs_one() else {
+		let Ok(Value::String(token)) = params.needs_one() else {
 			return Err(RpcError::InvalidParams);
 		};
 		surrealdb::iam::verify::token(DB.get().unwrap(), &mut self.session, &token).await?;

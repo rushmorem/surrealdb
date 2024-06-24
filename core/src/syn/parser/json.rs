@@ -43,7 +43,7 @@ impl Parser<'_> {
 						return Ok(x);
 					}
 				}
-				Ok(Value::Strand(strand))
+				Ok(Value::String(strand))
 			}
 			TokenKind::Digits | TokenKind::Number(_) => {
 				let peek = self.glue()?;

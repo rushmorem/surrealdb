@@ -50,7 +50,7 @@ impl Value {
 						},
 					},
 					Part::Value(x) => match x.compute(stk, ctx, opt, None).await? {
-						Value::Strand(f) => match path.len() {
+						Value::String(f) => match path.len() {
 							1 => {
 								v.remove(f.as_str());
 								Ok(())

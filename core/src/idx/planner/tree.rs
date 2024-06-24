@@ -136,7 +136,7 @@ impl<'a> TreeBuilder<'a> {
 		match v {
 			Value::Expression(e) => self.eval_expression(stk, group, e).await,
 			Value::Idiom(i) => self.eval_idiom(stk, group, i).await,
-			Value::Strand(_)
+			Value::String(_)
 			| Value::Number(_)
 			| Value::Bool(_)
 			| Value::Thing(_)

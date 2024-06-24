@@ -359,11 +359,11 @@ async fn router(
 			let path = base_url.join(SQL_PATH)?;
 			let mut request = client.post(path).headers(headers.clone());
 			let (ns, db) = match &mut params[..] {
-				[Value::Strand(ns), Value::Strand(db)] => {
+				[Value::String(ns), Value::String(db)] => {
 					(Some(mem::take(ns)), Some(mem::take(db)))
 				}
-				[Value::Strand(ns), Value::None] => (Some(mem::take(ns)), None),
-				[Value::None, Value::Strand(db)] => (None, Some(mem::take(db))),
+				[Value::String(ns), Value::None] => (Some(mem::take(ns)), None),
+				[Value::None, Value::String(db)] => (None, Some(mem::take(db))),
 				_ => unreachable!(),
 			};
 			let ns = match ns {
@@ -443,7 +443,7 @@ async fn router(
 		Method::Authenticate => {
 			let path = base_url.join(SQL_PATH)?;
 			let token = match &mut params[..1] {
-				[Value::Strand(token)] => mem::take(token),
+				[Value::String(token)] => mem::take(token),
 				_ => unreachable!(),
 			};
 			let request =
@@ -587,7 +587,7 @@ async fn router(
 		Method::Set => {
 			let path = base_url.join(SQL_PATH)?;
 			let (key, value) = match &mut params[..2] {
-				[Value::Strand(key), value] => (mem::take(key), value.to_string()),
+				[Value::String(key), value] => (mem::take(key), value.to_string()),
 				_ => unreachable!(),
 			};
 			let request = client
@@ -601,7 +601,7 @@ async fn router(
 			Ok(DbResponse::Other(Value::None))
 		}
 		Method::Unset => {
-			if let [Value::Strand(key)] = &params[..1] {
+			if let [Value::String(key)] = &params[..1] {
 				vars.swap_remove(key);
 			}
 			Ok(DbResponse::Other(Value::None))

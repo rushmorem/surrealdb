@@ -224,7 +224,7 @@ fn into_json(value: Value, simplify: bool) -> JsonValue {
 			Number::Float(float) => float.into(),
 			Number::Decimal(decimal) => json!(decimal),
 		},
-		Value::Strand(strand) => strand.into(),
+		Value::String(strand) => strand.into(),
 		Value::Duration(duration) => match simplify {
 			true => duration.to_raw().into(),
 			false => json!(duration.0),
@@ -410,7 +410,7 @@ mod tests {
 		#[test]
 		fn strand() {
 			for str in ["", "foo"] {
-				let value = Value::Strand(str.into());
+				let value = Value::String(str.into());
 
 				let simple_json = into_json(value.clone(), true);
 				assert_eq!(simple_json, json!(str));

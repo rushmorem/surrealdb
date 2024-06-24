@@ -270,7 +270,7 @@ where
 		self.map_valid(move |mut valid| {
 			let mut bindings = to_value(bindings)?;
 			if let Value::Array(array) = &mut bindings {
-				if let [Value::Strand(key), value] = &mut array.0[..] {
+				if let [Value::String(key), value] = &mut array.0[..] {
 					let mut map = BTreeMap::new();
 					map.insert(mem::take(key), mem::take(value));
 					bindings = map.into();

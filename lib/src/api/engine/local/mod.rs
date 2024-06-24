@@ -518,14 +518,14 @@ async fn router(
 	match method {
 		Method::Use => {
 			match &mut params[..] {
-				[Value::Strand(ns), Value::Strand(db)] => {
+				[Value::String(ns), Value::String(db)] => {
 					session.ns = Some(mem::take(ns));
 					session.db = Some(mem::take(db));
 				}
-				[Value::Strand(ns), Value::None] => {
+				[Value::String(ns), Value::None] => {
 					session.ns = Some(mem::take(ns));
 				}
-				[Value::None, Value::Strand(db)] => {
+				[Value::None, Value::String(db)] => {
 					session.db = Some(mem::take(db));
 				}
 				_ => unreachable!(),
@@ -550,7 +550,7 @@ async fn router(
 		}
 		Method::Authenticate => {
 			let token = match &mut params[..] {
-				[Value::Strand(token)] => mem::take(token),
+				[Value::String(token)] => mem::take(token),
 				_ => unreachable!(),
 			};
 			crate::iam::verify::token(kvs, session, &token).await?;
@@ -789,7 +789,7 @@ async fn router(
 		Method::Version => Ok(DbResponse::Other(crate::env::VERSION.into())),
 		Method::Set => {
 			let (key, value) = match &mut params[..2] {
-				[Value::Strand(key), value] => (mem::take(key), mem::take(value)),
+				[Value::String(key), value] => (mem::take(key), mem::take(value)),
 				_ => unreachable!(),
 			};
 			let var = Some(crate::map! {
@@ -803,7 +803,7 @@ async fn router(
 			Ok(DbResponse::Other(Value::None))
 		}
 		Method::Unset => {
-			if let [Value::Strand(key)] = &params[..1] {
+			if let [Value::String(key)] = &params[..1] {
 				vars.remove(key);
 			}
 			Ok(DbResponse::Other(Value::None))

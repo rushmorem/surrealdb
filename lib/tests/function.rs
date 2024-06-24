@@ -310,7 +310,7 @@ async fn function_array_first() -> Result<(), Error> {
 	let mut test = Test::new(sql).await?;
 	//
 	let tmp = test.next()?.result?;
-	let val = Value::Strand("hello".into());
+	let val = Value::String("hello".into());
 	assert_eq!(tmp, val);
 	//
 	let tmp = test.next()?.result?;
@@ -487,7 +487,7 @@ async fn function_array_last() -> Result<(), Error> {
 	let mut test = Test::new(sql).await?;
 	//
 	let tmp = test.next()?.result?;
-	let val = Value::Strand("world".into());
+	let val = Value::String("world".into());
 	assert_eq!(tmp, val);
 	//
 	let tmp = test.next()?.result?;

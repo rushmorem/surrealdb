@@ -12,7 +12,7 @@ pub async fn analyze(
 	(stk, ctx, opt): (&mut Stk, &Context<'_>, Option<&Options>),
 	(az, val): (Value, Value),
 ) -> Result<Value, Error> {
-	if let (Some(opt), Value::Strand(az), Value::Strand(val)) = (opt, az, val) {
+	if let (Some(opt), Value::String(az), Value::String(val)) = (opt, az, val) {
 		let az: Analyzer =
 			ctx.tx_lock().await.get_db_analyzer(opt.ns()?, opt.db()?, az.as_str()).await?.into();
 		az.analyze(stk, ctx, opt, val).await

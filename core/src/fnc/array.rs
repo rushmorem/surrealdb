@@ -364,12 +364,12 @@ pub fn slice((array, beg, lim): (Array, Option<isize>, Option<isize>)) -> Result
 pub fn sort((mut array, order): (Array, Option<Value>)) -> Result<Value, Error> {
 	match order {
 		// If "asc", sort ascending
-		Some(Value::Strand(s)) if s.as_str() == "asc" => {
+		Some(Value::String(s)) if s.as_str() == "asc" => {
 			array.sort_unstable();
 			Ok(array.into())
 		}
 		// If "desc", sort descending
-		Some(Value::Strand(s)) if s.as_str() == "desc" => {
+		Some(Value::String(s)) if s.as_str() == "desc" => {
 			array.sort_unstable_by(|a, b| b.cmp(a));
 			Ok(array.into())
 		}
